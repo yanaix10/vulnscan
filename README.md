@@ -98,18 +98,12 @@ Provide a target entrypoint URL (e.g., `https://staging.app.example.com` or `htt
   - *JSON*: Complete raw scan data and finding schemas for automated CI/CD pipelines.
   - *SARIF (v2.1.0)*: Native integration format for GitHub Advanced Security Code Scanning and GitLab Security Dashboards.
 
-### Headless CLI Usage
-Audits can be executed directly without the web UI:
-```bash
-# Scope validation
-python vulnscan.py check-scope --allowed localhost --target http://localhost/index.php
+---
 
-# Crawler discovery
-python vulnscan.py crawl --target http://localhost/index.php
+## Acknowledgments & Conclusion
 
-# Full automated scan
-python vulnscan.py scan --target http://localhost/index.php
+VulnPulse was engineered to bridge the gap between deep, autonomous attack surface fuzzing and clear, actionable security reporting. 
 
-# Report export
-python vulnscan.py report --scan-id 1 --format html --output report.html
-```
+Thank you for exploring the project. Contributions, feature suggestions, and security discussions are always welcome.
+
+Crafted with dedication to secure software engineering.
