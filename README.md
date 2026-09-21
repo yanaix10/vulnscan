@@ -8,12 +8,42 @@ VulnPulse is a standalone Dynamic Application Security Testing (DAST) platform d
 
 ---
 
-## Architecture & Directory Structure
+## Architecture Overview
 
-VulnPulse is organized into three clean layers:
-- **Frontend**: React 19, Vite, Tailwind CSS, and shadcn/ui providing an operational command center with real-time telemetry widgets.
-- **Backend API**: FastAPI, SQLAlchemy ORM, and Pydantic managing scan state, persistence, and report compilation.
-- **Security Engine**: Playwright headless browser for dynamic DOM exploration, HTTPX for high-concurrency payload fuzzing, and Pytest for engine check validation.
+The system is organized into three decoupled layers:
+
+```
++-----------------------------------------------------------------------+
+|                            USER INTERFACE                             |
+|    React 19  |  Vite  |  Tailwind CSS  |  shadcn/ui  |  Recharts       |
+|    - Command Center Dashboard with Real-Time SOC Telemetry Widgets   |
+|    - Severity Breakdown Analytics & Execution Pipeline Visualizer     |
+|    - Interactive Audit Report Viewer (HTML, JSON, SARIF)              |
++-----------------------------------+-----------------------------------+
+                                    | REST API (HTTP / JSON)
++-----------------------------------v-----------------------------------+
+|                           BACKEND SERVICE                             |
+|    FastAPI  |  SQLAlchemy  |  Pydantic  |  Alembic                    |
+|    - REST API Endpoints: /api/targets, /api/scans, /api/findings      |
+|    - Asynchronous Task Scheduling & Background Job Management         |
+|    - Compliance Report Generators (HTML, JSON, SARIF v2.1.0)          |
++-----------------------------------+-----------------------------------+
+                                    | Internal Engine Invocation
++-----------------------------------v-----------------------------------+
+|                           SECURITY ENGINE                             |
+|    Playwright Headless  |  HTTPX Async Engine  |  Scope Validator     |
+|    - Hybrid Crawler: DOM Event Traversal + Static Link Discovery      |
+|    - Session & Authentication State Manager (Bearer, Cookie, Form)    |
+|    - Modular Heuristic Checks:                                        |
+|      * SQL Injection (SQLi)           * Insecure Cookies              |
+|      * Reflected XSS (DOM / Input)    * Open Redirect                 |
+|      * Cross-Site Request Forgery     * Path Traversal                |
+|      * Defensive Security Headers     * Command Injection             |
+|      * Sensitive File Exposure        * Outdated Software Components  |
++-----------------------------------------------------------------------+
+```
+
+## Directory Structure
 
 ```
 vulnscan/
