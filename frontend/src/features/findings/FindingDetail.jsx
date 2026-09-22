@@ -302,178 +302,204 @@ export function FindingDetail() {
     references: []
   };
 
-  const getSeverityBorder = (sev) => {
+  const getSeverityStyle = (sev) => {
     switch ((sev || "").toLowerCase()) {
-      case "critical": return "border-l-4 border-l-red-600";
-      case "high": return "border-l-4 border-l-orange-500";
-      case "medium": return "border-l-4 border-l-amber-500";
-      case "low": return "border-l-4 border-l-blue-500";
-      default: return "border-l-4 border-l-slate-500";
+      case "critical":
+        return {
+          badge: "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30",
+          cardBorder: "border-l-4 border-l-red-500",
+        };
+      case "high":
+        return {
+          badge: "bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30",
+          cardBorder: "border-l-4 border-l-orange-500",
+        };
+      case "medium":
+        return {
+          badge: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30",
+          cardBorder: "border-l-4 border-l-amber-500",
+        };
+      case "low":
+        return {
+          badge: "bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30",
+          cardBorder: "border-l-4 border-l-blue-500",
+        };
+      default:
+        return {
+          badge: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border border-slate-500/30",
+          cardBorder: "border-l-4 border-l-slate-400",
+        };
     }
   };
 
-  const getSeverityBadgeVariant = (sev) => {
-    const s = (sev || "").toLowerCase();
-    if (s === "critical" || s === "high") return "destructive";
-    if (s === "medium") return "secondary";
-    return "outline";
-  };
+  const sevStyle = getSeverityStyle(finding.severity);
 
   return (
-    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-6">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6">
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
       >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Findings
+        <ArrowLeft className="w-3.5 h-3.5" />
+        <span>Back to Findings</span>
       </button>
 
-      {/* Main Advisory Card */}
-      <div className={`p-6 md:p-8 rounded-2xl bg-card border border-border space-y-6 shadow-xl ${getSeverityBorder(finding.severity)}`}>
+      {/* Main Advisory Card - Clean Enterprise Look */}
+      <div className={`p-6 sm:p-8 rounded-2xl bg-card border border-border/80 space-y-6 shadow-md ${sevStyle.cardBorder}`}>
         
-        {/* Requirement 6 - Line 1 & Line 2 Hierarchy */}
-        <div className="border-b border-border/80 pb-5 space-y-2">
-          {/* Line 1: severity Badge (short label) + finding title (largest text) + CVSS score right-aligned */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3 flex-wrap">
-              <Badge variant={getSeverityBadgeVariant(finding.severity)} className="font-mono text-xs font-bold uppercase tracking-wider">
+        {/* Single Clean Flex Row: Severity Badge + Title + CVSS Score */}
+        <div className="border-b border-border/60 pb-5 space-y-2">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <span className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold uppercase tracking-wider shrink-0 ${sevStyle.badge}`}>
                 {(finding.severity || "INFO").toUpperCase()}
-              </Badge>
-              <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
+              </span>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground font-sans tracking-tight truncate">
                 {details.name}
               </h1>
             </div>
 
-            <div className="font-mono text-xs font-semibold text-muted-foreground bg-muted/60 border border-border px-3 py-1.5 rounded-lg">
+            <div className="shrink-0 font-mono text-xs font-bold text-muted-foreground bg-muted/60 border border-border/70 px-3 py-1.5 rounded-lg shadow-2xs">
               {details.cvss.split(" ")[0]} CVSS
             </div>
           </div>
 
-          {/* Line 2, smaller and muted: OWASP category + CWE ID as plain text, not badges */}
-          <div className="text-sm text-muted-foreground font-sans pt-1">
+          <div className="text-xs sm:text-sm text-muted-foreground font-sans">
             {details.owasp} · {details.cwe.split(":")[0]}
           </div>
         </div>
 
-        {/* Labeled-Field Layout (label above value) for Endpoint / Parameter / CWE Definition */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-3.5 rounded-xl bg-muted/30 border border-border space-y-1">
-            <span className="block text-xs font-mono uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-primary" />
-              Endpoint
+        {/* Unified 3-Column Metadata Grid with Vertical Dividers */}
+        <div className="rounded-xl bg-muted/30 border border-border/70 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/60 overflow-hidden shadow-2xs">
+          {/* Col 1: Endpoint */}
+          <div className="p-4 space-y-1 min-w-0">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5 text-blue-500" />
+              ENDPOINT
             </span>
-            <div className="font-mono text-xs text-foreground break-all">
+            <div className="font-mono text-xs text-foreground truncate">
               <a 
                 href={finding.url} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-primary hover:underline underline-offset-2"
+                className="text-blue-500 hover:underline flex items-center gap-1 truncate"
+                title={finding.url}
               >
-                {finding.url}
+                <span className="truncate">{finding.url}</span>
+                <ExternalLink className="w-3 h-3 shrink-0 opacity-60" />
               </a>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-muted/30 border border-border space-y-1">
-            <span className="block text-xs font-mono uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-1.5">
-              <Terminal className="w-3.5 h-3.5 text-primary" />
-              Parameter
+          {/* Col 2: Parameter */}
+          <div className="p-4 space-y-1 min-w-0">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Terminal className="w-3.5 h-3.5 text-blue-500" />
+              PARAMETER
             </span>
-            <div className="font-mono text-xs text-amber-400 font-semibold break-all">
+            <div className="font-mono text-xs font-semibold text-amber-500 dark:text-amber-400 truncate">
               {finding.parameter || "— (Host Header / URL Root)"}
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-muted/30 border border-border space-y-1">
-            <span className="block text-xs font-mono uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-primary" />
-              CWE Definition
+          {/* Col 3: CWE Definition */}
+          <div className="p-4 space-y-1 min-w-0">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-blue-500" />
+              CWE DEFINITION
             </span>
-            <div className="font-mono text-xs text-foreground truncate">
+            <div className="font-mono text-xs text-foreground truncate" title={details.cwe}>
               {details.cwe}
             </div>
           </div>
         </div>
 
-        {/* Technical Evidence & Proof-of-Concept Block */}
+        {/* Technical Evidence & Proof-of-Concept */}
         <div className="space-y-2">
-          <span className="block text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <FileCode className="w-4 h-4 text-primary" />
-            Technical Evidence & Proof-of-Concept
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <FileCode className="w-3.5 h-3.5 text-blue-500" />
+            TECHNICAL EVIDENCE & PROOF-OF-CONCEPT
           </span>
-          <div className={`p-5 rounded-xl bg-zinc-950 border border-border font-mono text-xs text-zinc-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner ${getSeverityBorder(finding.severity)}`}>
-            <pre className="font-mono whitespace-pre-wrap word-break">{finding.evidence || "No raw evidence payload captured."}</pre>
+          <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-850 font-mono text-xs text-zinc-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner">
+            <pre className="font-mono whitespace-pre-wrap break-all">{finding.evidence || "Response headers do not contain Content-Security-Policy."}</pre>
           </div>
         </div>
 
-        {/* Threat Impact & Exploitability Analysis */}
+        {/* Threat Impact & Attack Vector */}
         <div className="space-y-2">
-          <span className="block text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400" />
-            Threat Impact & Attack Vector
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+            THREAT IMPACT & ATTACK VECTOR
           </span>
-          <div className="p-4 rounded-xl bg-muted/20 border border-border text-xs md:text-sm text-foreground/90 leading-relaxed font-sans">
+          <div className="p-4 rounded-xl bg-muted/40 text-xs sm:text-sm text-foreground/90 leading-relaxed font-sans">
             {details.impact}
           </div>
         </div>
 
-        {/* Remediation Guidance */}
-        <div className="space-y-3">
-          <span className="block text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            Remediation Recommendation
+        {/* Remediation Recommendation */}
+        <div className="space-y-2">
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+            REMEDIATION RECOMMENDATION
           </span>
-          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs md:text-sm text-emerald-800 dark:text-emerald-300 leading-relaxed font-sans">
+          <div className="p-4 rounded-xl bg-emerald-500/10 text-xs sm:text-sm text-emerald-950 dark:text-emerald-300 leading-relaxed font-sans">
             {finding.remediation || details.remediation}
           </div>
+        </div>
 
-          {/* Code Examples Tabs if available */}
-          {details.codeExamples && details.codeExamples.length > 0 && (
-            <div className={`rounded-xl border border-border overflow-hidden bg-zinc-950 ${getSeverityBorder(finding.severity)}`}>
-              <div className="flex items-center gap-2 bg-zinc-900 px-4 py-2.5 border-b border-zinc-800">
-                <Code className="w-3.5 h-3.5 text-primary" />
-                <span className="text-xs font-mono font-bold text-zinc-200 mr-2">Secure Code Implementation Reference:</span>
+        {/* Secure Code Implementation Reference with Crisp Segmented Control */}
+        {details.codeExamples && details.codeExamples.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <Code className="w-3.5 h-3.5 text-blue-500" />
+                SECURE CODE IMPLEMENTATION REFERENCE
+              </span>
+
+              {/* Modern crisp segmented control */}
+              <div className="inline-flex items-center p-0.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono self-start sm:self-auto">
                 {details.codeExamples.map((ex, idx) => (
                   <button
                     key={ex.lang}
                     onClick={() => setActiveCodeTab(idx)}
-                    className={`px-3 py-1 rounded-md text-xs font-mono transition-colors cursor-pointer ${
+                    className={`px-3 py-1 rounded-md text-xs font-mono transition-all cursor-pointer ${
                       activeCodeTab === idx
-                        ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                        : "text-zinc-400 hover:text-zinc-100"
+                        ? "bg-blue-600 text-white font-semibold shadow-xs"
+                        : "text-zinc-400 hover:text-zinc-200"
                     }`}
                   >
                     {ex.lang}
                   </button>
                 ))}
               </div>
-              <pre className="p-5 font-mono text-xs text-zinc-300 overflow-x-auto leading-relaxed">
-                <code>{details.codeExamples[activeCodeTab]?.code}</code>
-              </pre>
             </div>
-          )}
-        </div>
+
+            {/* Dark code block */}
+            <div className="rounded-xl bg-zinc-950 border border-zinc-850 p-4 font-mono text-xs text-zinc-300 overflow-x-auto leading-relaxed shadow-inner">
+              <code>{details.codeExamples[activeCodeTab]?.code}</code>
+            </div>
+          </div>
+        )}
 
         {/* Official References */}
         {details.references && details.references.length > 0 && (
-          <div className="space-y-2 pt-2">
-            <span className="block text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-primary" />
-              Official Standards & Security References
+          <div className="space-y-2 pt-1">
+            <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <BookOpen className="w-3.5 h-3.5 text-blue-500" />
+              OFFICIAL STANDARDS & SECURITY REFERENCES
             </span>
-            <ul className="space-y-1.5 pl-2 font-mono text-xs">
+            <ul className="space-y-1.5 font-mono text-xs pl-1">
               {details.references.map((ref, idx) => (
                 <li key={idx}>
                   <a
                     href={ref.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline inline-flex items-center gap-1.5 underline-offset-2"
+                    className="text-blue-500 hover:underline inline-flex items-center gap-1.5 underline-offset-2"
                   >
                     <span>{ref.name}</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="w-3 h-3 opacity-60" />
                   </a>
                 </li>
               ))}
@@ -482,9 +508,9 @@ export function FindingDetail() {
         )}
 
         {/* Back CTA */}
-        <div className="pt-4 border-t border-border">
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-4 h-4" />
+        <div className="pt-4 border-t border-border/60">
+          <Button variant="secondary" onClick={() => navigate(-1)} className="gap-2">
+            <ArrowLeft className="w-3.5 h-3.5" />
             Back to Findings
           </Button>
         </div>
@@ -493,3 +519,4 @@ export function FindingDetail() {
     </div>
   );
 }
+

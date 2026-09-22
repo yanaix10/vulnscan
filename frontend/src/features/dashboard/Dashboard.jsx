@@ -37,9 +37,11 @@ import { listScans, createScan } from "../../api/scans";
 import { LiveRadarScanner } from "./widgets/LiveRadarScanner";
 import { LiveSecurityEventStream } from "./widgets/LiveSecurityEventStream";
 import { SecurityPostureGauge } from "./widgets/SecurityPostureGauge";
+import { useTarget } from "../../context/TargetContext";
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const { selectedTarget } = useTarget();
 
   // Quick Scan Form State
   const [targetUrl, setTargetUrl] = useState("");
@@ -51,6 +53,14 @@ export function Dashboard() {
   const [bearerToken, setBearerToken] = useState("");
   const [scanLoading, setScanLoading] = useState(false);
   const [scanError, setScanError] = useState(null);
+
+  // Auto-fill targetUrl if workspace target is selected
+  useEffect(() => {
+    if (selectedTarget?.base_url) {
+      setTargetUrl(selectedTarget.base_url);
+    }
+  }, [selectedTarget]);
+
 
   // Dashboard Stats & Recent Scans
   const [targets, setTargets] = useState([]);
@@ -146,11 +156,6 @@ export function Dashboard() {
         {/* HERO SECTION: Command Center */}
         <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 md:p-10 shadow-xs cyber-grid-bg">
           <div className="max-w-3xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-mono tracking-wider uppercase font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              OWASP Top 10 Automated DAST
-            </div>
-
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight font-sans">
               Defend. Audit. <span className="text-primary font-bold">Discover.</span>
             </h2>
@@ -173,7 +178,7 @@ export function Dashboard() {
                   placeholder="https://target-app.example.com or http://localhost:3001"
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-background border border-input focus:border-primary text-foreground placeholder-muted-foreground font-mono text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-background border border-input ops-search-input focus:border-primary text-foreground placeholder-muted-foreground font-mono text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
 
@@ -552,18 +557,17 @@ export function Dashboard() {
                   </TableCell>
 
                   <TableCell>
-                    <Badge
-                      variant={
-                        scan.status === "failed"
-                          ? "destructive"
-                          : scan.status === "completed"
-                          ? "secondary"
-                          : "outline"
-                      }
-                      className="uppercase font-mono text-[10px]"
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider border ${
+                        scan.status === "completed"
+                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                          : scan.status === "failed"
+                          ? "bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30"
+                          : "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 animate-pulse"
+                      }`}
                     >
                       {scan.status}
-                    </Badge>
+                    </span>
                   </TableCell>
 
                   <TableCell>

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Plus, Wifi, WifiOff, Sun, Moon } from "lucide-react";
-import { SidebarTrigger } from "./ui/sidebar";
+import { Plus, ShieldAlert, Globe, PanelLeft } from "lucide-react";
+import { useSidebar } from "./ui/sidebar";
 import { Button } from "./ui/button";
 import { request } from "../api/client";
-import { useTheme } from "../context/ThemeContext";
+import { useTarget } from "../context/TargetContext";
 
 export function Navbar() {
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
+  const { selectedTarget } = useTarget();
+  const { open, toggleSidebar } = useSidebar();
   const [apiOnline, setApiOnline] = useState(true);
 
   useEffect(() => {
@@ -37,13 +38,44 @@ export function Navbar() {
     return "Dashboard";
   };
 
+
   return (
-    <header className="h-16 border-b border-border bg-card/85 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-20 shadow-xs">
-      <div className="flex items-center gap-3">
-        <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-        <h1 className="text-lg font-bold text-foreground tracking-wide font-sans">
-          {getPageTitle()}
-        </h1>
+    <header className="h-16 border-b border-border bg-card/85 backdrop-blur-md flex items-center justify-between sticky top-0 z-40 shadow-2xs w-full">
+      <div className="flex items-center h-full min-w-0 flex-1">
+        {/* Left Section: fixed w-64 aligned with sidebar, brand mark and toggle remain permanently in place */}
+        <div className="h-full w-64 px-4 border-r border-border flex items-center justify-between shrink-0">
+          {/* Brand mark */}
+          <Link to="/" className="flex items-center gap-2 hover:opacity-85 transition-opacity min-w-0">
+            <div className="w-7 h-7 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold shadow-2xs shrink-0">
+              <ShieldAlert className="w-4 h-4" />
+            </div>
+            <span className="font-extrabold tracking-wider text-sm font-mono text-foreground flex items-center gap-1.5 truncate">
+              VULNSCAN <span className="text-[9px] font-bold text-primary px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20">DAST</span>
+            </span>
+          </Link>
+
+          {/* Toggle button placed right on the border edge, never moves */}
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            title={open ? "Collapse Sidebar" : "Expand Sidebar"}
+            aria-label={open ? "Collapse Sidebar" : "Expand Sidebar"}
+            className={`p-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+              open 
+                ? "text-muted-foreground hover:text-foreground hover:bg-muted/70" 
+                : "text-foreground bg-muted/60 hover:bg-muted"
+            }`}
+          >
+            <PanelLeft className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Space, then Dashboard / Page title with NO slash */}
+        <div className="pl-6 flex items-center min-w-0">
+          <h1 className="text-base sm:text-lg md:text-xl font-extrabold text-foreground font-sans tracking-tight truncate">
+            {getPageTitle()}
+          </h1>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">
@@ -55,7 +87,7 @@ export function Navbar() {
         }`}>
           {apiOnline ? (
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-beacon" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>API Online</span>
             </span>
           ) : (
@@ -66,31 +98,17 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Theme Toggle Button */}
-        <button
-          onClick={toggleTheme}
-          aria-label="Toggle Theme"
-          title={theme === "light" ? "Switch to Dark Theme" : "Switch to White Light Theme"}
-          className="p-2 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
-        >
-          {theme === "light" ? (
-            <Moon className="w-4 h-4 text-slate-700" />
-          ) : (
-            <Sun className="w-4 h-4 text-amber-400" />
-          )}
-        </button>
-
         {/* Quick New Scan CTA */}
         {location.pathname !== "/scans/new" && (
           <Link to="/scans/new">
-            <Button size="sm" variant="default" className="shadow-xs">
+            <Button size="sm" variant="default" className="shadow-xs text-xs font-semibold gap-1.5">
               <Plus className="w-3.5 h-3.5" />
-              New Scan
+              <span className="hidden sm:inline">New Scan</span>
             </Button>
           </Link>
         )}
 
-        {/* User avatar - refined neutral branding */}
+        {/* User avatar */}
         <div 
           className="w-8 h-8 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center font-mono font-bold text-xs text-primary shadow-xs cursor-pointer select-none"
           title="Security Operator (JD)"
@@ -101,3 +119,5 @@ export function Navbar() {
     </header>
   );
 }
+
+export default Navbar;

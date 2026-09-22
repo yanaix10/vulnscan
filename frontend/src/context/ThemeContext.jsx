@@ -7,25 +7,46 @@ const ThemeContext = createContext({
 });
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem("vulnscan-theme");
-    return saved === "dark" ? "dark" : "light"; // Default to light mode
+  const [theme, setThemeState] = useState(() => {
+    try {
+      const saved = localStorage.getItem("vulnscan-theme");
+      if (saved === "dark" || saved === "light") return saved;
+    } catch {}
+    return "light"; // Default to light mode
   });
 
-  useEffect(() => {
+  const applyTheme = (newTheme) => {
     const root = document.documentElement;
-    if (theme === "dark") {
+    if (newTheme === "dark") {
       root.classList.add("dark");
       root.classList.remove("light");
     } else {
       root.classList.remove("dark");
       root.classList.add("light");
     }
-    localStorage.setItem("vulnscan-theme", theme);
+    try {
+      localStorage.setItem("vulnscan-theme", newTheme);
+    } catch {}
+  };
+
+  useEffect(() => {
+    applyTheme(theme);
   }, [theme]);
 
+  const setTheme = (value) => {
+    setThemeState((prev) => {
+      const next = typeof value === "function" ? value(prev) : value;
+      applyTheme(next);
+      return next;
+    });
+  };
+
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    setThemeState((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      applyTheme(next);
+      return next;
+    });
   };
 
   return (

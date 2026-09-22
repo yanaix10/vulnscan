@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Play, RefreshCw, FileText } from "lucide-react";
+import { Play, RefreshCw, FileText, Globe, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SeverityDot } from "@/components/Badge";
 import { Table, TableRow, TableCell } from "@/components/Table";
 import { listScans } from "@/api/scans";
+import { useTarget } from "@/context/TargetContext";
 
 export function ScanList() {
+  const { selectedTarget, selectedTargetId, selectTarget } = useTarget();
   const [scans, setScans] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,13 +29,32 @@ export function ScanList() {
     fetchScans();
   }, []);
 
+  const filteredScans = (selectedTargetId === "all" || !selectedTarget)
+    ? scans
+    : scans.filter(s => s.target_id === selectedTarget.id || s.target_url === selectedTarget.base_url);
+
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-foreground tracking-wide">
-            Scans History
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-extrabold text-foreground tracking-wide">
+              Scans History
+            </h2>
+            {selectedTarget && (
+              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono bg-primary/10 text-primary border border-primary/20">
+                <Globe className="w-3 h-3" />
+                <span>Scope: {selectedTarget.base_url.replace(/^https?:\/\//, "")}</span>
+                <button 
+                  onClick={() => selectTarget("all")} 
+                  title="Clear workspace filter"
+                  className="hover:text-foreground ml-1"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm mt-1">
             Historical audit execution log and live running security assessments.
           </p>
@@ -55,9 +76,9 @@ export function ScanList() {
 
       <Table
         headers={["ID", "TARGET", "STATUS", "PAGES", "FINDINGS BREAKDOWN", "STARTED", "ACTIONS"]}
-        emptyMessage="No scans executed yet. Click 'New Scan' to run your first test."
+        emptyMessage={selectedTarget ? `No scans recorded for ${selectedTarget.base_url}.` : "No scans executed yet. Click 'New Scan' to run your first test."}
       >
-        {scans.map((scan) => {
+        {filteredScans.map((scan) => {
           let highestSev = "clean";
           if (scan.findings_count) {
             if (scan.findings_count.critical > 0) highestSev = "critical";
@@ -93,9 +114,17 @@ export function ScanList() {
               </TableCell>
 
               <TableCell>
-                <Badge variant={statusVariant} className="font-mono uppercase text-[10px]">
+                <span
+                  className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider border ${
+                    scan.status === "completed"
+                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                      : scan.status === "failed"
+                      ? "bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30"
+                      : "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 animate-pulse"
+                  }`}
+                >
                   {scan.status}
-                </Badge>
+                </span>
               </TableCell>
 
               <TableCell>

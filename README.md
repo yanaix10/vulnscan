@@ -4,8 +4,6 @@ VulnPulse is a standalone Dynamic Application Security Testing (DAST) platform d
 
 ![Dashboard Overview](dashboard.png)
 
-![Real-Time Telemetry Widgets](telemetry.png)
-
 ---
 
 ## Architecture Overview
@@ -60,8 +58,7 @@ vulnscan/
 │       ├── components/       # shadcn/ui primitives, theme toggle, layout shells
 │       └── features/         # Dashboard, widgets, findings matrix, reports, scans, targets
 ├── vulnscan.py               # Standalone CLI runner for headless terminal audits
-├── dashboard.png             # Command center dashboard layout
-└── telemetry.png             # Real-time telemetry widgets layout
+└── dashboard.png             # Command center dashboard layout
 ```
 
 ---

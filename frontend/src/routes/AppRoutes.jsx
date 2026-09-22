@@ -8,6 +8,7 @@ import { ScanProgress } from "../features/scans/ScanProgress";
 import { FindingsList } from "../features/findings/FindingsList";
 import { FindingDetail } from "../features/findings/FindingDetail";
 import { ReportViewer } from "../features/reports/ReportViewer";
+import SidebarNavPreview from "../components/ui/dashboard-sidebar";
 
 export function AppRoutes() {
   return (
@@ -30,6 +31,9 @@ export function AppRoutes() {
 
       {/* Finding Detail */}
       <Route path="/findings/:id" element={<FindingDetail />} />
+
+      {/* 21st.dev Dashboard Sidebar Component Preview */}
+      <Route path="/sidebar-preview" element={<SidebarNavPreview />} />
 
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
