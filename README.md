@@ -99,7 +99,7 @@ Provide a target entrypoint URL (e.g., `https://staging.app.example.com` or `htt
 
 ## Acknowledgments & Conclusion
 
-VulnPulse was engineered to bridge the gap between deep, autonomous attack surface fuzzing and clear, actionable security reporting. 
+VulnPulse is engineered to bridge the gap between deep, autonomous attack surface fuzzing and clear, actionable security reporting. 
 
 Thank you for exploring the project. Contributions, feature suggestions, and security discussions are always welcome.
 
